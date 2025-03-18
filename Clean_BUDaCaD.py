@@ -24,6 +24,7 @@ def backfillZeros(intNumber, desiredLength):    #Backfills a number
 destinationDirectory = 'Output\\'
 sourceDirectory = 'Input\\'
 discardPatients = []
+copiedIDs = []
 manuallyInvalidFiles = [(88, 2), (118, 2), (168, 2), (168, 3), (168, 4), (180, 2)] # (patientNum, imageNum)
 
 for patientNum in range (1, 183): # Length of 'Normal' classified patients in database (BUDaCaD)
@@ -38,8 +39,15 @@ for patientNum in range (1, 183): # Length of 'Normal' classified patients in da
         imgNumber = 1
         for file in fileNames: 
             if not (patientNum, imgNumber) in manuallyInvalidFiles:
-                shutil.copy(sourceDirectory+f'Patient {patientNum}\\Ultrasound\\{file}', destinationDirectory+f'IM-{backfillZeros(patientNum,4)}-{backfillZeros(imgNumber,4)}.jpg')
+                newImageName = f'IM-{backfillZeros(patientNum,4)}-{backfillZeros(imgNumber,4)}.jpg'
+                shutil.copy(sourceDirectory+f'Patient {patientNum}\\Ultrasound\\{file}', destinationDirectory+newImageName)
+                copiedIDs.append(newImageName[0:len(newImageName)-4])   # Removes .jpg
             imgNumber += 1
+
+f = open(f"{destinationDirectory}fileNamesBUDaCaD.txt", "w")
+for id in copiedIDs:
+    f.write(f"{id}\n")
+f.close()    
 
 # Output Message
 print("Successfully renamed and collated all valid 'Normal' classfied UltraSound data.")
